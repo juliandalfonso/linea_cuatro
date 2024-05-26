@@ -3,6 +3,12 @@
 #include <fstream>
 #include <stdio.h>
 #include <stdlib.h>
+#include <string>
+#include <unordered_set>
+#include <sstream>
+#include <vector>
+#include <string>
+#include <map>
 
 using namespace std;
 const int filas = 7, columnas = 9;
@@ -517,22 +523,63 @@ void editarestadis()
 
     jugadoresesta1.close();
 }
+void visualizar() {
+    std::ifstream file("jugadoresesta1.txt");
 
-void visualizar()
-{
-    ifstream("jugadoresesta1.txt");
-    for (int i = 0; i < numero; i++)
-    {
-        cout << "Nombre: " << jugadores[i].nombre << ',';
-        cout << "Jugadas: " << jugadores[i].partidas << ',';
-        cout << "Ganadas: " << jugadores[i].partidasganadas << ',';
-        cout << "Perdidas: "<< jugadores[i].partidasperdidas << ',';
-        cout << "Empates: " <<jugadores[i].partidasempatadas << ',';
+    if (!file.is_open()) {
+        std::cerr << "No se pudo abrir el archivo" << std::endl;
+        return;
     }
-    system("pause");
-    main();
-    
+
+    std::vector<std::string> players;
+    std::string line;
+    std::map<std::string, int> playerPoints;
+
+    while (std::getline(file, line)) {
+        std::stringstream ss(line);
+        std::string token;
+        std::vector<std::string> tokens;
+
+        while (std::getline(ss, token, ',')) {
+            if (!token.empty()) {
+                tokens.push_back(token);
+            }
+        }
+
+        // Parse player1 data
+        std::string player1Name = tokens[0];
+        int player1GamesWon = std::stoi(tokens[2]);
+        int player1GamesDrawn = std::stoi(tokens[4]);
+        int player1Points = (player1GamesWon * 3) + (player1GamesDrawn * 1);
+        playerPoints[player1Name] = player1Points;
+
+        // Parse player2 data
+        std::string player2Name = tokens[5];
+        int player2GamesWon = std::stoi(tokens[7]);
+        int player2GamesDrawn = std::stoi(tokens[9]);
+        int player2Points = (player2GamesWon * 3) + (player2GamesDrawn * 1);
+        playerPoints[player2Name] = player2Points;
+    }
+
+    std::cout << "Nombres de los jugadores:" << std::endl;
+    for (const auto& player : playerPoints) {
+        std::cout << player.first << std::endl;
+    }
+
+    std::string nombre;
+    std::cout << "Digite nombre del jugador que desea buscar: ";
+    std::cin >> nombre;
+
+    if (playerPoints.find(nombre) != playerPoints.end()) {
+        std::cout << "Nombre: " << nombre << std::endl;
+        std::cout << "Total de puntos: " << playerPoints[nombre] << std::endl;
+    } else {
+        std::cout << "No se encontro el jugador" << std::endl;
+    }
+
+    file.close();
 }
+
 void final()
 {
     int seguir = 0;
