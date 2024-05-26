@@ -1,3 +1,4 @@
 *.txt
 linea_cuatro
 pdfs/*.pdf
+.vscode
