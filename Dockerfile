@@ -12,12 +12,3 @@ COPY . /app
 
 # Establece el directorio de trabajo
 WORKDIR /app
-
-# Compila el código fuente
-RUN g++ -o linea_cuatro linea_cuatro.cpp
-
-# Expone el puerto necesario para acceder al juego si es necesario
-# EXPOSE <puerto>
-
-# Comando por defecto para ejecutar el juego
-CMD ["./linea_cuatro"]
