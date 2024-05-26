@@ -82,7 +82,7 @@ int main()
             break;
 
         case '5':
-            abort;
+            abort();
             break;
         }
     }
