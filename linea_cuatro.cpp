@@ -574,6 +574,8 @@ void visualizar() {
     }
 
     file.close();
+    system("pause");
+    main();
 }
 
 void final()
