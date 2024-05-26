@@ -57,9 +57,9 @@ int main()
              << "2.Torneo" << endl
              << "3.Estadisticas" << endl
              << "4.Reglas" << endl
-             << "5.Salir" << endl
              << "5.Salir" << endl;
         cin >> opcion;
+        cin.ignore();
         switch (opcion)
         {
         case '1':
