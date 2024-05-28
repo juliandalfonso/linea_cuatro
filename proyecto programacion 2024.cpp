@@ -5,82 +5,79 @@
 #include <stdlib.h>
 
 using namespace std;
-const int filas = 7, columnas = 9;
-void partidarapida();
-void preptablero();
-void llenar();
-void ficha();
-void reglas();
-bool buscarganador(int, int, char);
-bool buscarganadorv(int, int, char);
-bool buscarganadorh(int, int, char);
-bool diago1(int, int, char);
-bool diago2(int, int, char);
-void imprimirestadisticas();
-bool buscarganadord(int, int, char);
-void visualizar();
-void editarestadis();
-bool buscarganadordi(int, int, char);
-void mensajeganador(char);
-void estadisticas(int);
-void torneo(int);
-void final();
 
-char tablero[filas][columnas];
+const int FILAS = 7, COLUMNAS = 9;
+
+void partidaRapida();
+void prepararTablero();
+void llenarTablero();
+void colocarFicha();
+void mostrarReglas();
+bool buscarGanador(int, int, char);
+bool buscarGanadorVertical(int, int, char);
+bool buscarGanadorHorizontal(int, int, char);
+bool buscarDiagonal1(int, int, char);
+bool buscarDiagonal2(int, int, char);
+void imprimirEstadisticas();
+void visualizarEstadisticas();
+void editarEstadisticas();
+void mostrarMensajeGanador(char);
+void actualizarEstadisticas(int);
+void iniciarTorneo(int);
+void juegoFinal();
+
+char tablero[FILAS][COLUMNAS];
 char simbolo = 'O', opcion;
-int posc, coordenada, ultimapos, a, b, contador = 0, numero, numero1, numero2, v;
-bool fin = false;
+int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugadores, jugadoresActivos, indiceJugador, totalJugadores;
+bool finJuego = false;
 int cont = 0;
-
 bool listo = false;
-struct jugador
-{
 
+struct Jugador
+{
     string nombre;
     int partidas;
-    int partidasganadas;
-    int partidasperdidas;
-    int partidasempatadas;
+    int partidasGanadas;
+    int partidasPerdidas;
+    int partidasEmpatadas;
 } jugadores[100];
 
 int main()
 {
-    numero = 0;
+    numeroJugadores = 0;
     opcion = 0;
-    preptablero();
+    prepararTablero();
     system("cls");
     while (opcion == 5 || opcion < 1)
     {
-
-        cout << "Que desea hacer: \n"
-             << "1.Partida rapida" << endl
-             << "2.Torneo" << endl
-             << "3.Estadisticas" << endl
-             << "4.Reglas" << endl
-             << "5.Salir" << endl;
+        cout << "¿Qué desea hacer?: \n"
+             << "1. Partida rápida" << endl
+             << "2. Torneo" << endl
+             << "3. Estadísticas" << endl
+             << "4. Reglas" << endl
+             << "5. Salir" << endl;
         cin >> opcion;
         switch (opcion)
         {
         case '1':
-            numero = 2;
-            estadisticas(numero);
+            numeroJugadores = 2;
+            actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
-            partidarapida();
+            partidaRapida();
             break;
         case '2':
             simbolo = 'X';
-            cout << "digite jugadores para el torneo tiene que ser un numero par multiplo de 4 :";
-            cin >> numero;
-            estadisticas(numero);
-            torneo(numero);
+            cout << "Digite el número de jugadores para el torneo (debe ser un número par múltiplo de 4): ";
+            cin >> numeroJugadores;
+            actualizarEstadisticas(numeroJugadores);
+            iniciarTorneo(numeroJugadores);
             break;
         case '3':
-            visualizar();
+            visualizarEstadisticas();
             break;
         case '4':
-            reglas();
+            mostrarReglas();
             break;
-
         case '5':
             abort;
             break;
@@ -89,27 +86,26 @@ int main()
 
     return 0;
 }
-void partidarapida()
+
+void partidaRapida()
 {
     int seguir = 0;
     system("cls");
-    llenar();
+    llenarTablero();
 
-    if (buscarganadorh(ultimapos, coordenada, simbolo) || buscarganadorv(ultimapos, coordenada, simbolo) || diago2(ultimapos, coordenada, simbolo) || diago1(ultimapos, coordenada, simbolo))
+    if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
     {
-        cout << "desea seguir?si=1 no =0\n";
+        cout << "¿Desea seguir? (si=1, no=0): ";
         cin >> seguir;
         if (seguir == 1)
         {
-
-            preptablero();
+            prepararTablero();
             simbolo = 'X';
-            v = 2;
-            partidarapida();
+            jugadoresActivos = 2;
+            partidaRapida();
         }
         else
         {
-
             system("pause");
             main();
         }
@@ -124,39 +120,41 @@ void partidarapida()
         simbolo = 'X';
     }
 
-    cout << "\nEn que columa quiere su ficha: \n";
-    cin >> posc;
-    if (posc > 9 || posc < 1)
+    cout << "\n¿En qué columna quiere colocar su ficha?: ";
+    cin >> posicionColumna;
+    if (posicionColumna > 9 || posicionColumna < 1)
     {
-        cout << "\nValor ingresado no valido!\n";
-        cout << "\nEn que columa quiere su ficha: \n";
-        cin >> posc;
+        cout << "\n¡Valor ingresado no válido!\n";
+        cout << "\n¿En qué columna quiere colocar su ficha?: ";
+        cin >> posicionColumna;
     }
     else
     {
-        coordenada = posc - 1;
-        ficha();
+        coordenada = posicionColumna - 1;
+        colocarFicha();
     }
-    partidarapida();
+    partidaRapida();
 
     return;
 }
-void preptablero()
+
+void prepararTablero()
 {
-    for (int i = 0; i < filas; i++)
+    for (int i = 0; i < FILAS; i++)
     {
-        for (int j = 0; j < columnas; j++)
+        for (int j = 0; j < COLUMNAS; j++)
         {
             tablero[i][j] = '-';
         }
     }
 }
-void llenar()
+
+void llenarTablero()
 {
     int posiciones[9] = {1, 2, 3, 4, 5, 6, 7, 8, 9};
-    for (int i = 0; i < filas; i++)
+    for (int i = 0; i < FILAS; i++)
     {
-        for (int j = 0; j < columnas; j++)
+        for (int j = 0; j < COLUMNAS; j++)
         {
             cout << setw(2) << tablero[i][j];
         }
@@ -167,93 +165,85 @@ void llenar()
         cout << " " << posiciones[i];
     }
 }
-void ficha()
+
+void colocarFicha()
 {
-    // Recorrer fila por fila a ver si esta vacio el espacio
-    for (int i = 0; i < filas; i++)
+    for (int i = 0; i < FILAS; i++)
     {
         if (tablero[i][coordenada] == '-')
         {
-            // Si estamos en la fila de arriba no "borramos" el espacio
             if (i > 0)
             {
                 tablero[i - 1][coordenada] = '-';
             }
-            // Poner X o O en la posicion
             tablero[i][coordenada] = simbolo;
-            // Guardamos la ultima posicion de fila en la que quedó la ficha
-            ultimapos = i;
+            ultimaPosicion = i;
         }
     }
 }
 
-bool buscarganadorh(int ultimapos, int coordenada, char simbolo)
+bool buscarGanadorHorizontal(int ultimaPosicion, int coordenada, char simbolo)
 {
-
     contador = 1;
     a = coordenada;
-    fin = false;
-    // Buscar ganador horizontal
-    while (!fin)
+    finJuego = false;
+    while (!finJuego)
     {
-        // Iniciamos a-- para comprobar izquierda y despues derecha de la ficha inicial
         a--;
         if (a >= 0)
         {
-            if (tablero[ultimapos][a] == simbolo)
+            if (tablero[ultimaPosicion][a] == simbolo)
             {
                 contador++;
             }
             else
             {
-                fin = true;
+                finJuego = true;
             }
         }
         else
         {
-            fin = true;
+            finJuego = true;
         }
     }
     a = coordenada;
-    fin = false;
-    while (!fin)
+    finJuego = false;
+    while (!finJuego)
     {
-        // Iniciamos a++ para comprobar por derecha
         a++;
-        if (a < filas)
+        if (a < FILAS)
         {
-            if (tablero[ultimapos][a] == simbolo)
+            if (tablero[ultimaPosicion][a] == simbolo)
             {
                 contador++;
             }
             else
             {
-                fin = true;
+                finJuego = true;
             }
         }
         else
         {
-            fin = true;
+            finJuego = true;
         }
     }
     if (contador >= 4)
     {
-
-        mensajeganador(simbolo);
+        mostrarMensajeGanador(simbolo);
         return true;
     }
     return false;
 }
-bool buscarganadorv(int ultimapos, int coordenada, char simbolo)
+
+bool buscarGanadorVertical(int ultimaPosicion, int coordenada, char simbolo)
 {
-    // Revisar el ganador vertical
     contador = 1;
-    a = ultimapos;
-    fin = false;
-    while (!fin)
+    a = ultimaPosicion;
+    finJuego = false;
+    while (!finJuego)
     {
         a++;
-        if (a <= filas)
+        if (a <= FILAS)
         {
             if (tablero[a][coordenada] == simbolo)
             {
@@ -261,34 +251,31 @@ bool buscarganadorv(int ultimapos, int coordenada, char simbolo)
             }
             else
             {
-                fin = true;
+                finJuego = true;
             }
         }
         else
         {
-            fin = true;
+            finJuego = true;
         }
     }
     if (contador >= 4)
     {
-
-        mensajeganador(simbolo);
+        mostrarMensajeGanador(simbolo);
         return true;
     }
     return false;
 }
 
-bool diago2(int i, int j, char t)
+bool buscarDiagonal2(int i, int j, char t)
 {
     cont = 1;
     a = i;
     b = j;
     listo = false;
-    // Izquierda
     while (!listo)
     {
-
-        if (a < filas && b > 0)
+        if (a < FILAS && b > 0)
         {
             if (tablero[a][b] == t)
             {
@@ -309,12 +296,11 @@ bool diago2(int i, int j, char t)
     a = i;
     b = j;
     listo = false;
-    // Derecha
     while (!listo)
     {
         a--;
         b++;
-        if (a > 0 && b < columnas)
+        if (a > 0 && b < COLUMNAS)
         {
             if (tablero[a][b] == t)
             {
@@ -334,24 +320,23 @@ bool diago2(int i, int j, char t)
     }
     if (cont >= 4)
     {
-        mensajeganador(simbolo);
+        mostrarMensajeGanador(simbolo);
         return true;
     }
     return false;
 }
 
-bool diago1(int i, int j, char t)
+bool buscarDiagonal1(int i, int j, char t)
 {
     cont = 1;
     a = i;
     b = j;
     listo = false;
-    // Derecha
     while (!listo)
     {
         a++;
         b++;
-        if (a < filas && b < columnas)
+        if (a < FILAS && b < COLUMNAS)
         {
             if (tablero[a][b] == t)
             {
@@ -370,7 +355,6 @@ bool diago1(int i, int j, char t)
     a = i;
     b = j;
     listo = false;
-    // Izquierda
     while (!listo)
     {
         a--;
@@ -393,154 +377,143 @@ bool diago1(int i, int j, char t)
     }
     if (cont >= 4)
     {
-        mensajeganador(simbolo);
+        mostrarMensajeGanador(simbolo);
         return true;
     }
     return false;
 }
 
-void mensajeganador(char simbolo)
+void mostrarMensajeGanador(char simbolo)
 {
-    int i = 0 + v;
+    int i = 0 + jugadoresActivos;
 
     if (simbolo == 'O')
     {
-        cout << "\n Felicidades " << jugadores[i].nombre << " Logro conectar 4 en linea!\n";
-        jugadores[i].partidasganadas += 1;
-        jugadores[i + 1].partidasperdidas += 1;
+        cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea.\n";
+        jugadores[i].partidasGanadas += 1;
+        jugadores[i + 1].partidasPerdidas += 1;
     }
     else if (simbolo == 'X')
     {
-        cout << "\n Felicidades " << jugadores[i + 1].nombre << " Logro conectar 4 en linea!\n";
-        jugadores[i + 1].partidasganadas += 1;
-        jugadores[i].partidasperdidas += 1;
+        cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea.\n";
+        jugadores[i + 1].partidasGanadas += 1;
+        jugadores[i].partidasPerdidas += 1;
     }
     else
     {
-        cout << "Empate!\n";
-        jugadores[i].partidasempatadas += 1;
-        jugadores[i + 1].partidasempatadas += 1;
+        cout << "¡Empate!\n";
+        jugadores[i].partidasEmpatadas += 1;
+        jugadores[i + 1].partidasEmpatadas += 1;
     }
-    imprimirestadisticas();
+    imprimirEstadisticas();
 }
-void torneo(int numero)
+
+void iniciarTorneo(int numeroJugadores)
 {
-    int y = 0, p = numero / 2;
-    y = numero;
+    int y = 0, p = numeroJugadores / 2;
+    y = numeroJugadores;
     do
     {
-
-        partidarapida();
-
+        partidaRapida();
     } while (p == 1);
 
     if (p == 1)
     {
-
-        final();
+        juegoFinal();
     }
 }
-void estadisticas(int numero)
-{
 
-    for (int i = 0; i < numero; i++)
+void actualizarEstadisticas(int numeroJugadores)
+{
+    for (int i = 0; i < numeroJugadores; i++)
     {
         fflush(stdin);
-        cout << "digite nombre:" << endl;
+        cout << "Digite nombre:" << endl;
         getline(cin, jugadores[i].nombre);
 
         jugadores[i].partidas = jugadores[i].partidas + 1;
     }
 }
 
-void reglas()
+void mostrarReglas()
 {
-    cout << "El objetivo del juego es lograr ser el primero en colocar cuatro fichas en linea vertical, horizontal o diagonal, teniendo en cuenta que por la columna que se elija para insertar una pieza, esta caera hasta el fondo. Es posible que en un juego dado no exista ningun ganador. " << endl;
+    cout << "El objetivo del juego es lograr ser el primero en colocar cuatro fichas en línea vertical, horizontal o diagonal, teniendo en cuenta que por la columna que se elija para insertar una pieza, esta caerá hasta el fondo. Es posible que en un juego dado no exista ningún ganador. " << endl;
     cout << endl;
-    cout << "Si se selecciona el juego rapido este lanzara un tablero para que puedan jugar dos personas." << endl;
+    cout << "Si se selecciona el juego rápido, este lanzará un tablero para que puedan jugar dos personas." << endl;
     cout << endl;
-    cout << "En caso de seleccionar torneo este sera el formato: " << endl;
+    cout << "En caso de seleccionar torneo, este será el formato: " << endl;
     cout << endl;
-    cout << "jugador2----------           ----------jugaro3" << endl;
+    cout << "jugador2----------           ----------jugador3" << endl;
     cout << "                  |---------|" << endl;
     cout << "                  |---------|" << endl;
     cout << "jugador1----------           ----------jugador4" << endl;
     system("pause");
     main();
 }
-void imprimirestadisticas()
+
+void imprimirEstadisticas()
 {
-
-    ofstream jugadoresesta1;
-
-    jugadoresesta1.open("jugadoresesta1.txt", ios::out);
-    if (jugadoresesta1.fail())
+    ofstream archivoEstadisticas;
+    archivoEstadisticas.open("estadisticas.txt", ios::out);
+    if (archivoEstadisticas.fail())
     {
-
         cout << "No se puede abrir el archivo";
         exit(1);
     }
-    for (int i = 0; i < numero; i++)
+    for (int i = 0; i < numeroJugadores; i++)
     {
-        jugadoresesta1 << jugadores[i].nombre << ',';
-        jugadoresesta1 << jugadores[i].partidas << ',';
-        jugadoresesta1 << jugadores[i].partidasganadas << ',';
-        jugadoresesta1 << jugadores[i].partidasperdidas << ',';
-        jugadoresesta1 << jugadores[i].partidasempatadas << ',';
+        archivoEstadisticas << jugadores[i].nombre << ',';
+        archivoEstadisticas << jugadores[i].partidas << ',';
+        archivoEstadisticas << jugadores[i].partidasGanadas << ',';
+        archivoEstadisticas << jugadores[i].partidasPerdidas << ',';
+        archivoEstadisticas << jugadores[i].partidasEmpatadas << ',';
     }
-    jugadoresesta1.close();
+    archivoEstadisticas.close();
 }
 
-void editarestadis()
+void editarEstadisticas()
 {
-
-    ofstream jugadoresesta1; // modo de escritura
-
-    jugadoresesta1.open("jugadoresesta1.txt", ios::app);
-
-    if (jugadoresesta1.fail())
+    ofstream archivoEstadisticas;
+    archivoEstadisticas.open("estadisticas.txt", ios::app);
+    if (archivoEstadisticas.fail())
     {
-
         cout << "No se puede abrir el archivo";
         exit(1);
     }
-
-    for (int i = 0; i < numero; i++)
+    for (int i = 0; i < numeroJugadores; i++)
     {
-        jugadoresesta1 << jugadores[i].nombre << ',';
-        jugadoresesta1 << jugadores[i].partidas << ',';
-        jugadoresesta1 << jugadores[i].partidasganadas << ',';
-        jugadoresesta1 << jugadores[i].partidasperdidas << ',';
-        jugadoresesta1 << jugadores[i].partidasempatadas << ',';
+        archivoEstadisticas << jugadores[i].nombre << ',';
+        archivoEstadisticas << jugadores[i].partidas << ',';
+        archivoEstadisticas << jugadores[i].partidasGanadas << ',';
+        archivoEstadisticas << jugadores[i].partidasPerdidas << ',';
+        archivoEstadisticas << jugadores[i].partidasEmpatadas << ',';
     }
-
-    jugadoresesta1.close();
+    archivoEstadisticas.close();
 }
 
-void visualizar()
+void visualizarEstadisticas()
 {
-    ifstream("jugadoresesta1.txt");
-    for (int i = 0; i < numero; i++)
+    ifstream archivo("estadisticas.txt");
+    for (int i = 0; i < numeroJugadores; i++)
     {
         cout << "Nombre: " << jugadores[i].nombre << ',';
         cout << "Jugadas: " << jugadores[i].partidas << ',';
-        cout << "Ganadas: " << jugadores[i].partidasganadas << ',';
-        cout << "Perdidas: "<< jugadores[i].partidasperdidas << ',';
-        cout << "Empates: " <<jugadores[i].partidasempatadas << ',';
+        cout << "Ganadas: " << jugadores[i].partidasGanadas << ',';
+        cout << "Perdidas: " << jugadores[i].partidasPerdidas << ',';
+        cout << "Empates: " << jugadores[i].partidasEmpatadas << ',';
     }
     system("pause");
     main();
-    
 }
-void final()
+
+void juegoFinal()
 {
     int seguir = 0;
     system("cls");
-    llenar();
+    llenarTablero();
 
-    if (buscarganadorh(ultimapos, coordenada, simbolo) || buscarganadorv(ultimapos, coordenada, simbolo) || diago2(ultimapos, coordenada, simbolo) || diago1(ultimapos, coordenada, simbolo))
+    if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
     {
-
         main();
     }
 
@@ -553,18 +526,18 @@ void final()
         simbolo = 'X';
     }
 
-    cout << "\nEn que columa quiere su ficha: \n";
-    cin >> posc;
-    if (posc > 9 || posc < 1)
+    cout << "\n¿En qué columna quiere colocar su ficha?: ";
+    cin >> posicionColumna;
+    if (posicionColumna > 9 || posicionColumna < 1)
     {
-        cout << "\nValor ingresado no valido!\n";
-        cout << "\nEn que columa quiere su ficha: \n";
-        cin >> posc;
+        cout << "\n¡Valor ingresado no válido!\n";
+        cout << "\n¿En qué columna quiere colocar su ficha?: ";
+        cin >> posicionColumna;
     }
     else
     {
-        coordenada = posc - 1;
-        ficha();
+        coordenada = posicionColumna - 1;
+        colocarFicha();
     }
-    partidarapida();
+    partidaRapida();
 }
