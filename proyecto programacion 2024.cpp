@@ -42,6 +42,7 @@ struct Jugador
     int partidasGanadas;
     int partidasPerdidas;
     int partidasEmpatadas;
+    int puntos; // Añadir campo para puntos acumulativos
 } jugadores[100];
 
 void limpiarPantalla() {
@@ -415,19 +416,23 @@ void mostrarMensajeGanador(char simbolo)
     {
         cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i].partidasGanadas += 1;
+        jugadores[i].puntos += 3; // Añadir puntos por ganar
         jugadores[i + 1].partidasPerdidas += 1;
     }
     else if (simbolo == 'X')
     {
         cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i + 1].partidasGanadas += 1;
+        jugadores[i + 1].puntos += 3; // Añadir puntos por ganar
         jugadores[i].partidasPerdidas += 1;
     }
     else
     {
         cout << "¡Empate!\n";
         jugadores[i].partidasEmpatadas += 1;
+        jugadores[i].puntos += 1; // Añadir puntos por empate
         jugadores[i + 1].partidasEmpatadas += 1;
+        jugadores[i + 1].puntos += 1; // Añadir puntos por empate
     }
     imprimirEstadisticas();
 }
@@ -457,7 +462,8 @@ void actualizarEstadisticas(int numeroJugadores)
         cin.ignore();
         getline(cin, jugadores[i].nombre);
 
-        jugadores[i].partidas = jugadores[i].partidas + 1;
+        jugadores[i].partidas += 1;
+        jugadores[i].puntos = 0; // Inicializar puntos
     }
 }
 
@@ -492,6 +498,7 @@ void imprimirEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
+        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
     }
     archivoEstadisticas.close();
 }
@@ -512,6 +519,7 @@ void editarEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
+        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
     }
     archivoEstadisticas.close();
 }
@@ -525,20 +533,35 @@ void visualizarEstadisticas()
     }
 
     limpiarPantalla();
+    string nombreBuscado;
+    cout << "Ingrese el nombre del jugador para ver sus estadísticas: ";
+    cin.ignore(); // Para ignorar el salto de línea anterior
+    getline(cin, nombreBuscado);
+
     cout << "Estadísticas de Jugadores:" << endl;
     string nombre;
-    int partidas, ganadas, perdidas, empatadas;
+    int partidas, ganadas, perdidas, empatadas, puntos;
+    bool encontrado = false;
 
     while (getline(archivo, nombre)) {
-        archivo >> partidas >> ganadas >> perdidas >> empatadas;
+        archivo >> partidas >> ganadas >> perdidas >> empatadas >> puntos;
         archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
-        cout << "Nombre: " << nombre << endl;
-        cout << "Partidas: " << partidas << endl;
-        cout << "Ganadas: " << ganadas << endl;
-        cout << "Perdidas: " << perdidas << endl;
-        cout << "Empatadas: " << empatadas << endl;
-        cout << "--------------------------" << endl;
-        archivo.ignore(); // Ignorar el carácter de nueva línea al final del bloque de datos
+
+        if (nombre == nombreBuscado) {
+            cout << "Nombre: " << nombre << endl;
+            cout << "Partidas: " << partidas << endl;
+            cout << "Ganadas: " << ganadas << endl;
+            cout << "Perdidas: " << perdidas << endl;
+            cout << "Empatadas: " << empatadas << endl;
+            cout << "Puntos: " << puntos << endl;
+            cout << "--------------------------" << endl;
+            encontrado = true;
+            break; // Salir del bucle una vez encontrado el jugador
+        }
+    }
+
+    if (!encontrado) {
+        cout << "Jugador no encontrado." << endl;
     }
 
     archivo.close();
