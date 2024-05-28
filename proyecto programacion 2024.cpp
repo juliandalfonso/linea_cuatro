@@ -59,12 +59,14 @@ void pausa() {
 
 int main()
 {
-    numeroJugadores = 0;
-    opcion = 0;
-    prepararTablero();
-    limpiarPantalla();
-    while (true)
+    bool continuar = true;
+    while (continuar)
     {
+        numeroJugadores = 0;
+        opcion = 0;
+        prepararTablero();
+        limpiarPantalla();
+        
         cout << "¿Qué desea hacer?: \n"
              << "1. Partida rápida" << endl
              << "2. Torneo" << endl
@@ -100,12 +102,12 @@ int main()
             break;
         case 5:
             cout << "Saliendo del programa..." << endl;
-            return 0;
+            continuar = false;
+            break;
         default:
             cout << "Opción no válida. Por favor intente de nuevo." << endl;
         }
     }
-
     return 0;
 }
 
@@ -129,7 +131,7 @@ void partidaRapida()
         else
         {
             pausa();
-            main();
+            return;
         }
     }
 
@@ -471,7 +473,6 @@ void mostrarReglas()
     cout << "                  |---------|" << endl;
     cout << "jugador1----------           ----------jugador4" << endl;
     pausa();
-    main();
 }
 
 void imprimirEstadisticas()
@@ -536,6 +537,7 @@ void visualizarEstadisticas()
         cout << "Perdidas: " << perdidas << endl;
         cout << "Empatadas: " << empatadas << endl;
         cout << "--------------------------" << endl;
+        archivo.ignore(); // Ignorar el carácter de nueva línea al final del bloque de datos
     }
 
     archivo.close();
@@ -550,7 +552,7 @@ void juegoFinal()
 
     if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
     {
-        main();
+        return;
     }
 
     if (simbolo == 'X')
