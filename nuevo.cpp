@@ -35,8 +35,8 @@ int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugad
 bool finJuego = false;
 int cont = 0;
 bool listo = false;
-int contadorMovimientos = 0; // Contador de movimientos global
-int ronda = 1; // Añadir variable de ronda para manejar el progreso del torneo
+int contadorMovimientos = 0; 
+int ronda = 1; 
 
 struct Jugador
 {
@@ -45,7 +45,7 @@ struct Jugador
     int partidasGanadas;
     int partidasPerdidas;
     int partidasEmpatadas;
-    int puntos; // Añadir campo para puntos acumulativos
+    int puntos; 
 } jugadores[100];
 
 void limpiarPantalla() {
@@ -85,7 +85,7 @@ int main()
             numeroJugadores = 2;
             actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0; 
             partidaRapida();
             break;
         case 2:
@@ -98,7 +98,7 @@ int main()
                 }
             } while (numeroJugadores % 4 != 0 || numeroJugadores <= 0);
             actualizarEstadisticas(numeroJugadores);
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0; 
             iniciarTorneo(numeroJugadores);
             break;
         case 3:
@@ -133,7 +133,7 @@ void partidaRapida()
             prepararTablero();
             simbolo = 'X';
             jugadoresActivos = 2;
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0; 
             partidaRapida();
         }
         else
@@ -204,8 +204,8 @@ void colocarFicha()
         {
             tablero[i][coordenada] = simbolo;
             ultimaPosicion = i;
-            contadorMovimientos++; // Incrementar contador de movimientos
-            break; // Salir del bucle una vez colocada la ficha
+            contadorMovimientos++; 
+            break; 
         }
     }
 }
@@ -420,7 +420,7 @@ void mostrarMensajeGanador(char simbolo, int contadorMovimientos)
     {
         cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i].partidasGanadas += 1;
-        jugadores[i].puntos += 3; // Añadir puntos por ganar
+        jugadores[i].puntos += 3; 
         jugadores[i + 1].partidasPerdidas += 1;
         ganador = jugadores[i].nombre;
     }
@@ -428,7 +428,7 @@ void mostrarMensajeGanador(char simbolo, int contadorMovimientos)
     {
         cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i + 1].partidasGanadas += 1;
-        jugadores[i + 1].puntos += 3; // Añadir puntos por ganar
+        jugadores[i + 1].puntos += 3; 
         jugadores[i].partidasPerdidas += 1;
         ganador = jugadores[i + 1].nombre;
     }
@@ -436,9 +436,9 @@ void mostrarMensajeGanador(char simbolo, int contadorMovimientos)
     {
         cout << "¡Empate!\n";
         jugadores[i].partidasEmpatadas += 1;
-        jugadores[i].puntos += 1; // Añadir puntos por empate
+        jugadores[i].puntos += 1; 
         jugadores[i + 1].partidasEmpatadas += 1;
-        jugadores[i + 1].puntos += 1; // Añadir puntos por empate
+        jugadores[i + 1].puntos += 1; 
         ganador = "Empate";
     }
     guardarDatosPartida(jugadores[i].nombre, jugadores[i + 1].nombre, ganador, contadorMovimientos, obtenerTableroFinal());
@@ -453,13 +453,13 @@ void iniciarTorneo(int numeroJugadores)
         for (int i = 0; i < numeroJugadores; i += 2)
         {
             jugadoresActivos = i;
-            contadorMovimientos = 0; // Reiniciar contador de movimientos para cada partida
+            contadorMovimientos = 0; 
             prepararTablero();
             partidaRapida();
         }
         ronda *= 2;
     }
-    // Determinar el ganador del torneo
+    
     int maxPuntos = -1;
     string ganadorTorneo;
     for (int i = 0; i < numeroJugadores; i++)
@@ -476,7 +476,7 @@ void iniciarTorneo(int numeroJugadores)
 
 void actualizarEstadisticas(int numeroJugadores)
 {
-    cin.ignore(); // Ignorar el carácter de nueva línea pendiente antes de capturar nombres
+    cin.ignore(); 
     for (int i = 0; i < numeroJugadores; i++)
     {
         cout << "Digite nombre del jugador " << i + 1 << ":" << endl;
@@ -516,7 +516,7 @@ void imprimirEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
+        archivoEstadisticas << jugadores[i].puntos << "\n"; 
     }
     archivoEstadisticas.close();
 }
@@ -537,7 +537,7 @@ void editarEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
+        archivoEstadisticas << jugadores[i].puntos << "\n"; 
     }
     archivoEstadisticas.close();
 }
@@ -553,7 +553,7 @@ void visualizarEstadisticas()
     limpiarPantalla();
     string nombreBuscado;
     cout << "Ingrese el nombre del jugador para ver sus estadísticas: ";
-    cin.ignore(); // Para ignorar el salto de línea anterior
+    cin.ignore(); 
     getline(cin, nombreBuscado);
 
     cout << "Estadísticas de Jugadores:" << endl;
@@ -563,7 +563,7 @@ void visualizarEstadisticas()
 
     while (getline(archivo, nombre)) {
         archivo >> partidas >> ganadas >> perdidas >> empatadas >> puntos;
-        archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
+        archivo.ignore(); 
 
         if (nombre == nombreBuscado) {
             cout << "Nombre: " << nombre << endl;
@@ -574,7 +574,7 @@ void visualizarEstadisticas()
             cout << "Puntos: " << puntos << endl;
             cout << "--------------------------" << endl;
             encontrado = true;
-            break; // Salir del bucle una vez encontrado el jugador
+            break; 
         }
     }
 
