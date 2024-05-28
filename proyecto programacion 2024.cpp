@@ -27,7 +27,8 @@ void iniciarTorneo(int);
 void juegoFinal();
 
 char tablero[FILAS][COLUMNAS];
-char simbolo = 'O', opcion;
+char simbolo = 'O';
+int opcion;
 int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugadores, jugadoresActivos, indiceJugador, totalJugadores;
 bool finJuego = false;
 int cont = 0;
@@ -42,13 +43,21 @@ struct Jugador
     int partidasEmpatadas;
 } jugadores[100];
 
+void limpiarPantalla() {
+    #ifdef _WIN32
+        system("cls");
+    #else
+        system("clear");
+    #endif
+}
+
 int main()
 {
     numeroJugadores = 0;
     opcion = 0;
     prepararTablero();
-    system("cls");
-    while (opcion == 5 || opcion < 1)
+    limpiarPantalla();
+    while (opcion != 5)
     {
         cout << "¿Qué desea hacer?: \n"
              << "1. Partida rápida" << endl
@@ -59,28 +68,30 @@ int main()
         cin >> opcion;
         switch (opcion)
         {
-        case '1':
+        case 1:
             numeroJugadores = 2;
             actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
             partidaRapida();
             break;
-        case '2':
+        case 2:
             simbolo = 'X';
             cout << "Digite el número de jugadores para el torneo (debe ser un número par múltiplo de 4): ";
             cin >> numeroJugadores;
             actualizarEstadisticas(numeroJugadores);
             iniciarTorneo(numeroJugadores);
             break;
-        case '3':
+        case 3:
             visualizarEstadisticas();
             break;
-        case '4':
+        case 4:
             mostrarReglas();
             break;
-        case '5':
-            abort;
+        case 5:
+            cout << "Saliendo del programa..." << endl;
             break;
+        default:
+            cout << "Opción no válida. Por favor intente de nuevo." << endl;
         }
     }
 
@@ -90,7 +101,7 @@ int main()
 void partidaRapida()
 {
     int seguir = 0;
-    system("cls");
+    limpiarPantalla();
     llenarTablero();
 
     if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
@@ -429,6 +440,7 @@ void actualizarEstadisticas(int numeroJugadores)
     {
         fflush(stdin);
         cout << "Digite nombre:" << endl;
+        cin.ignore();
         getline(cin, jugadores[i].nombre);
 
         jugadores[i].partidas = jugadores[i].partidas + 1;
@@ -494,6 +506,11 @@ void editarEstadisticas()
 void visualizarEstadisticas()
 {
     ifstream archivo("estadisticas.txt");
+    if (!archivo) {
+        cout << "No se puede abrir el archivo de estadísticas." << endl;
+        return;
+    }
+
     for (int i = 0; i < numeroJugadores; i++)
     {
         cout << "Nombre: " << jugadores[i].nombre << ',';
@@ -509,7 +526,7 @@ void visualizarEstadisticas()
 void juegoFinal()
 {
     int seguir = 0;
-    system("cls");
+    limpiarPantalla();
     llenarTablero();
 
     if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
