@@ -33,7 +33,7 @@ int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugad
 bool finJuego = false;
 int cont = 0;
 bool listo = false;
-int contadorMovimientos = 0; // Contador de movimientos global
+int contadorMovimientos = 0;
 
 struct Jugador
 {
@@ -42,7 +42,7 @@ struct Jugador
     int partidasGanadas;
     int partidasPerdidas;
     int partidasEmpatadas;
-    int puntos; // Añadir campo para puntos acumulativos
+    int puntos;
 } jugadores[100];
 
 void limpiarPantalla() {
@@ -82,7 +82,7 @@ int main()
             numeroJugadores = 2;
             actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0;
             partidaRapida();
             break;
         case 2:
@@ -95,7 +95,7 @@ int main()
                 }
             } while (numeroJugadores % 4 != 0 || numeroJugadores <= 0);
             actualizarEstadisticas(numeroJugadores);
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0;
             iniciarTorneo(numeroJugadores);
             break;
         case 3:
@@ -130,7 +130,7 @@ void partidaRapida()
             prepararTablero();
             simbolo = 'X';
             jugadoresActivos = 2;
-            contadorMovimientos = 0; // Reiniciar contador de movimientos
+            contadorMovimientos = 0;
             partidaRapida();
         }
         else
@@ -201,8 +201,8 @@ void colocarFicha()
         {
             tablero[i][coordenada] = simbolo;
             ultimaPosicion = i;
-            contadorMovimientos++; // Incrementar contador de movimientos
-            break; // Salir del bucle una vez colocada la ficha
+            contadorMovimientos++;
+            break;
         }
     }
 }
@@ -416,23 +416,23 @@ void mostrarMensajeGanador(char simbolo)
     {
         cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i].partidasGanadas += 1;
-        jugadores[i].puntos += 3; // Añadir puntos por ganar
+        jugadores[i].puntos += 3;
         jugadores[i + 1].partidasPerdidas += 1;
     }
     else if (simbolo == 'X')
     {
         cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i + 1].partidasGanadas += 1;
-        jugadores[i + 1].puntos += 3; // Añadir puntos por ganar
+        jugadores[i + 1].puntos += 3;
         jugadores[i].partidasPerdidas += 1;
     }
     else
     {
         cout << "¡Empate!\n";
         jugadores[i].partidasEmpatadas += 1;
-        jugadores[i].puntos += 1; // Añadir puntos por empate
+        jugadores[i].puntos += 1;
         jugadores[i + 1].partidasEmpatadas += 1;
-        jugadores[i + 1].puntos += 1; // Añadir puntos por empate
+        jugadores[i + 1].puntos += 1;
     }
     imprimirEstadisticas();
 }
@@ -443,7 +443,7 @@ void iniciarTorneo(int numeroJugadores)
     y = numeroJugadores;
     do
     {
-        contadorMovimientos = 0; // Reiniciar contador de movimientos para cada partida
+        contadorMovimientos = 0;
         partidaRapida();
     } while (p == 1);
 
@@ -463,7 +463,7 @@ void actualizarEstadisticas(int numeroJugadores)
         getline(cin, jugadores[i].nombre);
 
         jugadores[i].partidas += 1;
-        jugadores[i].puntos = 0; // Inicializar puntos
+        jugadores[i].puntos = 0;
     }
 }
 
@@ -498,7 +498,7 @@ void imprimirEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
+        archivoEstadisticas << jugadores[i].puntos << "\n";
     }
     archivoEstadisticas.close();
 }
@@ -519,7 +519,7 @@ void editarEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
+        archivoEstadisticas << jugadores[i].puntos << "\n";
     }
     archivoEstadisticas.close();
 }
@@ -535,7 +535,7 @@ void visualizarEstadisticas()
     limpiarPantalla();
     string nombreBuscado;
     cout << "Ingrese el nombre del jugador para ver sus estadísticas: ";
-    cin.ignore(); // Para ignorar el salto de línea anterior
+    cin.ignore();
     getline(cin, nombreBuscado);
 
     cout << "Estadísticas de Jugadores:" << endl;
@@ -545,7 +545,7 @@ void visualizarEstadisticas()
 
     while (getline(archivo, nombre)) {
         archivo >> partidas >> ganadas >> perdidas >> empatadas >> puntos;
-        archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
+        archivo.ignore();
 
         if (nombre == nombreBuscado) {
             cout << "Nombre: " << nombre << endl;
@@ -556,7 +556,7 @@ void visualizarEstadisticas()
             cout << "Puntos: " << puntos << endl;
             cout << "--------------------------" << endl;
             encontrado = true;
-            break; // Salir del bucle una vez encontrado el jugador
+            break;
         }
     }
 
