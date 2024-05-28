@@ -621,9 +621,9 @@ void guardarDatosPartida(string nombreJugador1, string nombreJugador2, string ga
     archivoPartidas << "Ganador: " << ganador << "\n";
     archivoPartidas << "Número de jugadas: " << jugadas << "\n";
     archivoPartidas << "Tablero final:\n";
-    for (string fila : tableroFinal)
+    for (int i = 0; i < tableroFinal.size(); i++)
     {
-        archivoPartidas << fila << "\n";
+        archivoPartidas << tableroFinal[i] << "\n";
     }
     archivoPartidas << "--------------------------\n";
     archivoPartidas.close();
