@@ -57,7 +57,7 @@ int main()
     opcion = 0;
     prepararTablero();
     limpiarPantalla();
-    while (opcion != 5)
+    while (true) // Cambiar a un bucle infinito
     {
         cout << "¿Qué desea hacer?: \n"
              << "1. Partida rápida" << endl
@@ -89,7 +89,7 @@ int main()
             break;
         case 5:
             cout << "Saliendo del programa..." << endl;
-            break;
+            return 0; // Salir del programa
         default:
             cout << "Opción no válida. Por favor intente de nuevo." << endl;
         }
@@ -474,11 +474,11 @@ void imprimirEstadisticas()
     }
     for (int i = 0; i < numeroJugadores; i++)
     {
-        archivoEstadisticas << jugadores[i].nombre << ',';
-        archivoEstadisticas << jugadores[i].partidas << ',';
-        archivoEstadisticas << jugadores[i].partidasGanadas << ',';
-        archivoEstadisticas << jugadores[i].partidasPerdidas << ',';
-        archivoEstadisticas << jugadores[i].partidasEmpatadas << ',';
+        archivoEstadisticas << jugadores[i].nombre << "\n";
+        archivoEstadisticas << jugadores[i].partidas << "\n";
+        archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
+        archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
+        archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
     }
     archivoEstadisticas.close();
 }
@@ -494,33 +494,43 @@ void editarEstadisticas()
     }
     for (int i = 0; i < numeroJugadores; i++)
     {
-        archivoEstadisticas << jugadores[i].nombre << ',';
-        archivoEstadisticas << jugadores[i].partidas << ',';
-        archivoEstadisticas << jugadores[i].partidasGanadas << ',';
-        archivoEstadisticas << jugadores[i].partidasPerdidas << ',';
-        archivoEstadisticas << jugadores[i].partidasEmpatadas << ',';
+        archivoEstadisticas << jugadores[i].nombre << "\n";
+        archivoEstadisticas << jugadores[i].partidas << "\n";
+        archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
+        archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
+        archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
     }
     archivoEstadisticas.close();
 }
 
 void visualizarEstadisticas()
 {
+    limpiarPantalla();
     ifstream archivo("estadisticas.txt");
     if (!archivo) {
         cout << "No se puede abrir el archivo de estadísticas." << endl;
         return;
     }
 
-    for (int i = 0; i < numeroJugadores; i++)
+    cout << "Estadísticas de Jugadores:" << endl;
+    string nombre;
+    int partidas, ganadas, perdidas, empatadas;
+
+    while (getline(archivo, nombre))
     {
-        cout << "Nombre: " << jugadores[i].nombre << ',';
-        cout << "Jugadas: " << jugadores[i].partidas << ',';
-        cout << "Ganadas: " << jugadores[i].partidasGanadas << ',';
-        cout << "Perdidas: " << jugadores[i].partidasPerdidas << ',';
-        cout << "Empates: " << jugadores[i].partidasEmpatadas << ',';
+        archivo >> partidas >> ganadas >> perdidas >> empatadas;
+        archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
+        cout << "Nombre: " << nombre << endl;
+        cout << "Partidas: " << partidas << endl;
+        cout << "Ganadas: " << ganadas << endl;
+        cout << "Perdidas: " << perdidas << endl;
+        cout << "Empatadas: " << empatadas << endl;
+        cout << "--------------------------" << endl;
     }
+
+    archivo.close();
     system("pause");
-    main();
+    limpiarPantalla();
 }
 
 void juegoFinal()
