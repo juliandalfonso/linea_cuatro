@@ -26,7 +26,7 @@ void actualizarEstadisticas(int);
 void iniciarTorneo(int);
 void juegoFinal();
 vector<string> obtenerTableroFinal();
-void guardarDatosPartida(const string& nombreJugador1, const string& nombreJugador2, const string& ganador, int jugadas, const vector<string>& tableroFinal);
+void guardarDatosPartida(string nombreJugador1, string nombreJugador2, string ganador, int jugadas, vector<string> tableroFinal);
 
 char tablero[FILAS][COLUMNAS];
 char simbolo = 'O';
@@ -602,7 +602,7 @@ vector<string> obtenerTableroFinal()
     return tableroFinal;
 }
 
-void guardarDatosPartida(const string& nombreJugador1, const string& nombreJugador2, const string& ganador, int jugadas, const vector<string>& tableroFinal)
+void guardarDatosPartida(string nombreJugador1, string nombreJugador2, string ganador, int jugadas, vector<string> tableroFinal)
 {
     ofstream archivoPartidas;
     archivoPartidas.open("datosPartidas.txt", ios::app);
