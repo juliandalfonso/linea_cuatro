@@ -33,6 +33,7 @@ int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugad
 bool finJuego = false;
 int cont = 0;
 bool listo = false;
+int contadorMovimientos = 0; // Contador de movimientos global
 
 struct Jugador
 {
@@ -80,6 +81,7 @@ int main()
             numeroJugadores = 2;
             actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             partidaRapida();
             break;
         case 2:
@@ -92,6 +94,7 @@ int main()
                 }
             } while (numeroJugadores % 4 != 0 || numeroJugadores <= 0);
             actualizarEstadisticas(numeroJugadores);
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             iniciarTorneo(numeroJugadores);
             break;
         case 3:
@@ -126,6 +129,7 @@ void partidaRapida()
             prepararTablero();
             simbolo = 'X';
             jugadoresActivos = 2;
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             partidaRapida();
         }
         else
@@ -158,8 +162,6 @@ void partidaRapida()
         colocarFicha();
     }
     partidaRapida();
-
-    return;
 }
 
 void prepararTablero()
@@ -192,16 +194,14 @@ void llenarTablero()
 
 void colocarFicha()
 {
-    for (int i = 0; i < FILAS; i++)
+    for (int i = FILAS - 1; i >= 0; i--)
     {
         if (tablero[i][coordenada] == '-')
         {
-            if (i > 0)
-            {
-                tablero[i - 1][coordenada] = '-';
-            }
             tablero[i][coordenada] = simbolo;
             ultimaPosicion = i;
+            contadorMovimientos++; // Incrementar contador de movimientos
+            break; // Salir del bucle una vez colocada la ficha
         }
     }
 }
@@ -413,13 +413,13 @@ void mostrarMensajeGanador(char simbolo)
 
     if (simbolo == 'O')
     {
-        cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea.\n";
+        cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i].partidasGanadas += 1;
         jugadores[i + 1].partidasPerdidas += 1;
     }
     else if (simbolo == 'X')
     {
-        cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea.\n";
+        cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i + 1].partidasGanadas += 1;
         jugadores[i].partidasPerdidas += 1;
     }
@@ -438,6 +438,7 @@ void iniciarTorneo(int numeroJugadores)
     y = numeroJugadores;
     do
     {
+        contadorMovimientos = 0; // Reiniciar contador de movimientos para cada partida
         partidaRapida();
     } while (p == 1);
 
@@ -552,6 +553,7 @@ void juegoFinal()
 
     if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
     {
+        mostrarMensajeGanador(simbolo);
         return;
     }
 
