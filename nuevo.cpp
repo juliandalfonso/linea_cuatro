@@ -8,7 +8,7 @@ using namespace std;
 
 const int FILAS = 7, COLUMNAS = 9;
 
-void partidaRapida();
+void partidaRapida(bool esTorneo = false);
 void prepararTablero();
 void llenarTablero();
 void colocarFicha();
@@ -118,54 +118,58 @@ int main()
     return 0;
 }
 
-void partidaRapida()
+void partidaRapida(bool esTorneo)
 {
-    int seguir = 0;
-    limpiarPantalla();
-    llenarTablero();
-
-    if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
+    bool continuarPartida = true;
+    while (continuarPartida)
     {
-        cout << "¿Desea seguir? (si=1, no=0): ";
-        cin >> seguir;
-        if (seguir == 1)
+        limpiarPantalla();
+        llenarTablero();
+
+        if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
         {
-            prepararTablero();
-            simbolo = 'X';
-            jugadoresActivos = 2;
-            contadorMovimientos = 0; 
-            partidaRapida();
+            cout << "¿Desea seguir? (si=1, no=0): ";
+            int seguir;
+            cin >> seguir;
+            if (seguir == 1)
+            {
+                prepararTablero();
+                simbolo = 'X';
+                jugadoresActivos = 2;
+                contadorMovimientos = 0; 
+            }
+            else
+            {
+                pausa();
+                continuarPartida = false;
+            }
+        }
+
+        if (!continuarPartida) break;
+
+        if (simbolo == 'X')
+        {
+            simbolo = 'O';
         }
         else
         {
-            pausa();
-            return;
+            simbolo = 'X';
         }
-    }
 
-    if (simbolo == 'X')
-    {
-        simbolo = 'O';
-    }
-    else
-    {
-        simbolo = 'X';
-    }
-
-    cout << "\n¿En qué columna quiere colocar su ficha?: ";
-    cin >> posicionColumna;
-    if (posicionColumna > 9 || posicionColumna < 1)
-    {
-        cout << "\n¡Valor ingresado no válido!\n";
         cout << "\n¿En qué columna quiere colocar su ficha?: ";
         cin >> posicionColumna;
+        if (posicionColumna > 9 || posicionColumna < 1)
+        {
+            cout << "\n¡Valor ingresado no válido!\n";
+            cout << "\n¿En qué columna quiere colocar su ficha?: ";
+            cin >> posicionColumna;
+        }
+        else
+        {
+            coordenada = posicionColumna - 1;
+            colocarFicha();
+        }
     }
-    else
-    {
-        coordenada = posicionColumna - 1;
-        colocarFicha();
-    }
-    partidaRapida();
 }
 
 void prepararTablero()
@@ -448,14 +452,15 @@ void mostrarMensajeGanador(char simbolo, int contadorMovimientos)
 void iniciarTorneo(int numeroJugadores)
 {
     ronda = 1;
-    while (ronda < numeroJugadores)
+    bool continuarTorneo = true;
+    while (ronda < numeroJugadores && continuarTorneo)
     {
         for (int i = 0; i < numeroJugadores; i += 2)
         {
             jugadoresActivos = i;
             contadorMovimientos = 0; 
             prepararTablero();
-            partidaRapida();
+            partidaRapida(true);
         }
         ronda *= 2;
     }
