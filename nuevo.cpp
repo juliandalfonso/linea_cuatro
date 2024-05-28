@@ -1,9 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <fstream>
-#include <stdio.h>
-#include <stdlib.h>
 #include <vector>
+#include <stdlib.h>
 
 using namespace std;
 
@@ -22,10 +21,12 @@ bool buscarDiagonal2(int, int, char);
 void imprimirEstadisticas();
 void visualizarEstadisticas();
 void editarEstadisticas();
-void mostrarMensajeGanador(char);
+void mostrarMensajeGanador(char, int);
 void actualizarEstadisticas(int);
 void iniciarTorneo(int);
 void juegoFinal();
+vector<string> obtenerTableroFinal();
+void guardarDatosPartida(const string& nombreJugador1, const string& nombreJugador2, const string& ganador, int jugadas, const vector<string>& tableroFinal);
 
 char tablero[FILAS][COLUMNAS];
 char simbolo = 'O';
@@ -34,7 +35,8 @@ int posicionColumna, coordenada, ultimaPosicion, a, b, contador = 0, numeroJugad
 bool finJuego = false;
 int cont = 0;
 bool listo = false;
-int contadorMovimientos = 0; 
+int contadorMovimientos = 0; // Contador de movimientos global
+int ronda = 1; // Añadir variable de ronda para manejar el progreso del torneo
 
 struct Jugador
 {
@@ -43,7 +45,7 @@ struct Jugador
     int partidasGanadas;
     int partidasPerdidas;
     int partidasEmpatadas;
-    int puntos; 
+    int puntos; // Añadir campo para puntos acumulativos
 } jugadores[100];
 
 void limpiarPantalla() {
@@ -83,7 +85,7 @@ int main()
             numeroJugadores = 2;
             actualizarEstadisticas(numeroJugadores);
             simbolo = 'X';
-            contadorMovimientos = 0; 
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             partidaRapida();
             break;
         case 2:
@@ -96,7 +98,7 @@ int main()
                 }
             } while (numeroJugadores % 4 != 0 || numeroJugadores <= 0);
             actualizarEstadisticas(numeroJugadores);
-            contadorMovimientos = 0; 
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             iniciarTorneo(numeroJugadores);
             break;
         case 3:
@@ -131,7 +133,7 @@ void partidaRapida()
             prepararTablero();
             simbolo = 'X';
             jugadoresActivos = 2;
-            contadorMovimientos = 0; 
+            contadorMovimientos = 0; // Reiniciar contador de movimientos
             partidaRapida();
         }
         else
@@ -202,8 +204,8 @@ void colocarFicha()
         {
             tablero[i][coordenada] = simbolo;
             ultimaPosicion = i;
-            contadorMovimientos++; 
-            break; 
+            contadorMovimientos++; // Incrementar contador de movimientos
+            break; // Salir del bucle una vez colocada la ficha
         }
     }
 }
@@ -255,7 +257,7 @@ bool buscarGanadorHorizontal(int ultimaPosicion, int coordenada, char simbolo)
     }
     if (contador >= 4)
     {
-        mostrarMensajeGanador(simbolo);
+        mostrarMensajeGanador(simbolo, contadorMovimientos);
         return true;
     }
     return false;
@@ -287,7 +289,7 @@ bool buscarGanadorVertical(int ultimaPosicion, int coordenada, char simbolo)
     }
     if (contador >= 4)
     {
-        mostrarMensajeGanador(simbolo);
+        mostrarMensajeGanador(simbolo, contadorMovimientos);
         return true;
     }
     return false;
@@ -346,7 +348,7 @@ bool buscarDiagonal2(int i, int j, char t)
     }
     if (cont >= 4)
     {
-        mostrarMensajeGanador(simbolo);
+        mostrarMensajeGanador(simbolo, contadorMovimientos);
         return true;
     }
     return false;
@@ -403,66 +405,82 @@ bool buscarDiagonal1(int i, int j, char t)
     }
     if (cont >= 4)
     {
-        mostrarMensajeGanador(simbolo);
+        mostrarMensajeGanador(simbolo, contadorMovimientos);
         return true;
     }
     return false;
 }
 
-void mostrarMensajeGanador(char simbolo)
+void mostrarMensajeGanador(char simbolo, int contadorMovimientos)
 {
     int i = 0 + jugadoresActivos;
+    string ganador;
 
     if (simbolo == 'O')
     {
         cout << "\n¡Felicidades " << jugadores[i].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i].partidasGanadas += 1;
-        jugadores[i].puntos += 3; 
+        jugadores[i].puntos += 3; // Añadir puntos por ganar
         jugadores[i + 1].partidasPerdidas += 1;
+        ganador = jugadores[i].nombre;
     }
     else if (simbolo == 'X')
     {
         cout << "\n¡Felicidades " << jugadores[i + 1].nombre << "! Logró conectar 4 en línea con " << contadorMovimientos << " movimientos.\n";
         jugadores[i + 1].partidasGanadas += 1;
-        jugadores[i + 1].puntos += 3; 
+        jugadores[i + 1].puntos += 3; // Añadir puntos por ganar
         jugadores[i].partidasPerdidas += 1;
+        ganador = jugadores[i + 1].nombre;
     }
     else
     {
         cout << "¡Empate!\n";
         jugadores[i].partidasEmpatadas += 1;
-        jugadores[i].puntos += 1; 
+        jugadores[i].puntos += 1; // Añadir puntos por empate
         jugadores[i + 1].partidasEmpatadas += 1;
-        jugadores[i + 1].puntos += 1; 
+        jugadores[i + 1].puntos += 1; // Añadir puntos por empate
+        ganador = "Empate";
     }
+    guardarDatosPartida(jugadores[i].nombre, jugadores[i + 1].nombre, ganador, contadorMovimientos, obtenerTableroFinal());
     imprimirEstadisticas();
 }
 
 void iniciarTorneo(int numeroJugadores)
 {
-    int y = 0, p = numeroJugadores / 2;
-    y = numeroJugadores;
-    do
+    ronda = 1;
+    while (ronda < numeroJugadores)
     {
-        contadorMovimientos = 0; 
-        partidaRapida();
-    } while (p == 1);
-
-    if (p == 1)
-    {
-        juegoFinal();
+        for (int i = 0; i < numeroJugadores; i += 2)
+        {
+            jugadoresActivos = i;
+            contadorMovimientos = 0; // Reiniciar contador de movimientos para cada partida
+            prepararTablero();
+            partidaRapida();
+        }
+        ronda *= 2;
     }
+    // Determinar el ganador del torneo
+    int maxPuntos = -1;
+    string ganadorTorneo;
+    for (int i = 0; i < numeroJugadores; i++)
+    {
+        if (jugadores[i].puntos > maxPuntos)
+        {
+            maxPuntos = jugadores[i].puntos;
+            ganadorTorneo = jugadores[i].nombre;
+        }
+    }
+    cout << "\n¡El ganador del torneo es " << ganadorTorneo << " con " << maxPuntos << " puntos!\n";
+    pausa();
 }
 
 void actualizarEstadisticas(int numeroJugadores)
 {
+    cin.ignore(); // Ignorar el carácter de nueva línea pendiente antes de capturar nombres
     for (int i = 0; i < numeroJugadores; i++)
     {
-        fflush(stdin);
-        cout << "Digite nombre:" << endl;
-        cin.ignore();
+        cout << "Digite nombre del jugador " << i + 1 << ":" << endl;
         getline(cin, jugadores[i].nombre);
-
         jugadores[i].partidas += 1;
     }
 }
@@ -498,7 +516,7 @@ void imprimirEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; 
+        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
     }
     archivoEstadisticas.close();
 }
@@ -519,7 +537,7 @@ void editarEstadisticas()
         archivoEstadisticas << jugadores[i].partidasGanadas << "\n";
         archivoEstadisticas << jugadores[i].partidasPerdidas << "\n";
         archivoEstadisticas << jugadores[i].partidasEmpatadas << "\n";
-        archivoEstadisticas << jugadores[i].puntos << "\n"; 
+        archivoEstadisticas << jugadores[i].puntos << "\n"; // Guardar puntos acumulados
     }
     archivoEstadisticas.close();
 }
@@ -535,7 +553,7 @@ void visualizarEstadisticas()
     limpiarPantalla();
     string nombreBuscado;
     cout << "Ingrese el nombre del jugador para ver sus estadísticas: ";
-    cin.ignore(); 
+    cin.ignore(); // Para ignorar el salto de línea anterior
     getline(cin, nombreBuscado);
 
     cout << "Estadísticas de Jugadores:" << endl;
@@ -545,7 +563,7 @@ void visualizarEstadisticas()
 
     while (getline(archivo, nombre)) {
         archivo >> partidas >> ganadas >> perdidas >> empatadas >> puntos;
-        archivo.ignore(); 
+        archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
 
         if (nombre == nombreBuscado) {
             cout << "Nombre: " << nombre << endl;
@@ -556,7 +574,7 @@ void visualizarEstadisticas()
             cout << "Puntos: " << puntos << endl;
             cout << "--------------------------" << endl;
             encontrado = true;
-            break; 
+            break; // Salir del bucle una vez encontrado el jugador
         }
     }
 
@@ -568,6 +586,44 @@ void visualizarEstadisticas()
     pausa();
 }
 
+vector<string> obtenerTableroFinal()
+{
+    vector<string> tableroFinal;
+    for (int i = 0; i < FILAS; i++)
+    {
+        string fila;
+        for (int j = 0; j < COLUMNAS; j++)
+        {
+            fila += tablero[i][j];
+            fila += " ";
+        }
+        tableroFinal.push_back(fila);
+    }
+    return tableroFinal;
+}
+
+void guardarDatosPartida(const string& nombreJugador1, const string& nombreJugador2, const string& ganador, int jugadas, const vector<string>& tableroFinal)
+{
+    ofstream archivoPartidas;
+    archivoPartidas.open("datosPartidas.txt", ios::app);
+    if (archivoPartidas.fail())
+    {
+        cout << "No se puede abrir el archivo de datos de partidas.";
+        exit(1);
+    }
+    archivoPartidas << "Jugador 1: " << nombreJugador1 << "\n";
+    archivoPartidas << "Jugador 2: " << nombreJugador2 << "\n";
+    archivoPartidas << "Ganador: " << ganador << "\n";
+    archivoPartidas << "Número de jugadas: " << jugadas << "\n";
+    archivoPartidas << "Tablero final:\n";
+    for (const string& fila : tableroFinal)
+    {
+        archivoPartidas << fila << "\n";
+    }
+    archivoPartidas << "--------------------------\n";
+    archivoPartidas.close();
+}
+
 void juegoFinal()
 {
     int seguir = 0;
@@ -576,7 +632,7 @@ void juegoFinal()
 
     if (buscarGanadorHorizontal(ultimaPosicion, coordenada, simbolo) || buscarGanadorVertical(ultimaPosicion, coordenada, simbolo) || buscarDiagonal2(ultimaPosicion, coordenada, simbolo) || buscarDiagonal1(ultimaPosicion, coordenada, simbolo))
     {
-        mostrarMensajeGanador(simbolo);
+        mostrarMensajeGanador(simbolo, contadorMovimientos);
         return;
     }
 
