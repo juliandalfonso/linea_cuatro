@@ -51,13 +51,19 @@ void limpiarPantalla() {
     #endif
 }
 
+void pausa() {
+    cout << "Presiona Enter para continuar...";
+    cin.ignore();
+    cin.get();
+}
+
 int main()
 {
     numeroJugadores = 0;
     opcion = 0;
     prepararTablero();
     limpiarPantalla();
-    while (true) // Cambiar a un bucle infinito
+    while (true)
     {
         cout << "¿Qué desea hacer?: \n"
              << "1. Partida rápida" << endl
@@ -76,8 +82,13 @@ int main()
             break;
         case 2:
             simbolo = 'X';
-            cout << "Digite el número de jugadores para el torneo (debe ser un número par múltiplo de 4): ";
-            cin >> numeroJugadores;
+            do {
+                cout << "Digite el número de jugadores para el torneo (debe ser un número par múltiplo de 4): ";
+                cin >> numeroJugadores;
+                if (numeroJugadores % 4 != 0 || numeroJugadores <= 0) {
+                    cout << "Número de jugadores no válido. Debe ser un número par múltiplo de 4." << endl;
+                }
+            } while (numeroJugadores % 4 != 0 || numeroJugadores <= 0);
             actualizarEstadisticas(numeroJugadores);
             iniciarTorneo(numeroJugadores);
             break;
@@ -89,7 +100,7 @@ int main()
             break;
         case 5:
             cout << "Saliendo del programa..." << endl;
-            return 0; // Salir del programa
+            return 0;
         default:
             cout << "Opción no válida. Por favor intente de nuevo." << endl;
         }
@@ -117,7 +128,7 @@ void partidaRapida()
         }
         else
         {
-            system("pause");
+            pausa();
             main();
         }
     }
@@ -222,7 +233,7 @@ bool buscarGanadorHorizontal(int ultimaPosicion, int coordenada, char simbolo)
     while (!finJuego)
     {
         a++;
-        if (a < FILAS)
+        if (a < COLUMNAS)
         {
             if (tablero[ultimaPosicion][a] == simbolo)
             {
@@ -254,7 +265,7 @@ bool buscarGanadorVertical(int ultimaPosicion, int coordenada, char simbolo)
     while (!finJuego)
     {
         a++;
-        if (a <= FILAS)
+        if (a < FILAS)
         {
             if (tablero[a][coordenada] == simbolo)
             {
@@ -459,7 +470,7 @@ void mostrarReglas()
     cout << "                  |---------|" << endl;
     cout << "                  |---------|" << endl;
     cout << "jugador1----------           ----------jugador4" << endl;
-    system("pause");
+    pausa();
     main();
 }
 
@@ -505,19 +516,18 @@ void editarEstadisticas()
 
 void visualizarEstadisticas()
 {
-    limpiarPantalla();
     ifstream archivo("estadisticas.txt");
     if (!archivo) {
         cout << "No se puede abrir el archivo de estadísticas." << endl;
         return;
     }
 
+    limpiarPantalla();
     cout << "Estadísticas de Jugadores:" << endl;
     string nombre;
     int partidas, ganadas, perdidas, empatadas;
 
-    while (getline(archivo, nombre))
-    {
+    while (getline(archivo, nombre)) {
         archivo >> partidas >> ganadas >> perdidas >> empatadas;
         archivo.ignore(); // Ignorar el carácter de nueva línea después de leer los enteros
         cout << "Nombre: " << nombre << endl;
@@ -529,8 +539,7 @@ void visualizarEstadisticas()
     }
 
     archivo.close();
-    system("pause");
-    limpiarPantalla();
+    pausa();
 }
 
 void juegoFinal()
